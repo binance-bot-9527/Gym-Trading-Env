@@ -1,10 +1,10 @@
-Customization
-=============
+自定义
+=====
 
-Custom reward function
-----------------------
+自定义奖励函数
+------------
 
-Use the `History object <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ to create your custom reward function. Below is an example with a really basic reward function :math:`r_{t} = ln(\frac{p_{t}}{p_{t-1}})\text{ with }p_{t}\text{ = portofolio valuation at timestep }t` (this is the default reward function).
+使用 `History 对象 <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ 来创建你的自定义奖励函数。下面是一个非常基础的奖励函数示例：数学表达式 :math:`r_{t} = ln(\frac{p_{t}}{p_{t-1}})\text{，其中 }p_{t}\text{ 是时间步 }t\text{ 的投资组合估值}`（这是默认的奖励函数）。
 
 .. code-block:: python
 
@@ -19,51 +19,51 @@ Use the `History object <https://gym-trading-env.readthedocs.io/en/latest/histor
          ...
      )
 
-Custom logs
------------
+自定义日志
+---------
 
-Use the `History object <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ to add custom logs. If the ``verbose`` parameter of your trading environment is set to ``1`` or ``2``, the environment displays a quick summary of your episode. By default `Market Return` and `Portfolio Return` are the displayed metrics.
+使用 `History 对象 <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ 来添加自定义日志。如果你的交易环境的 ``verbose`` 参数设置为 ``1`` 或 ``2``，环境会显示你的回合的快速摘要。默认显示的指标是 `市场收益` 和 `投资组合收益`。
 
 .. code-block:: bash
 
-  Market Return :  25.30%   |   Portfolio Return : 45.24%
+  市场收益 :  25.30%   |   投资组合收益 : 45.24%
 
-You can add custom metrics using the method ``.add_metric(name, function)`` after initializing your environment :
+你可以在初始化环境后使用 ``.add_metric(name, function)`` 方法添加自定义指标：
 
 .. code-block:: python
   
   env = gym.make("TradingEnv",
          ...
      )
-  env.add_metric('Position Changes', lambda history : np.sum(np.diff(history['position']) != 0) )
-  env.add_metric('Episode Length', lambda history : len(history['position']) )
-  # Then, run your episode(s)
+  env.add_metric('仓位变动次数', lambda history : np.sum(np.diff(history['position']) != 0) )
+  env.add_metric('回合长度', lambda history : len(history['position']) )
+  # 然后，运行你的回合
 
 .. code-block:: bash
 
-  Market Return :  25.30%   |   Portfolio Return : 45.24%   |   Position Changes : 28417   |   Episode Lenght : 33087
+  市场收益 :  25.30%   |   投资组合收益 : 45.24%   |   仓位变动次数 : 28417   |   回合长度 : 33087
 
-The ``.add_metric`` method takes 2 parameters :
+``.add_metric`` 方法接受两个参数：
 
-* ``name`` : The displayed name of the metrics
+* ``name`` ：指标显示的名称
 
-* ``function`` : The function that takes the `History object <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ as parameters and returns a value (you might want to prefer string over other types to avoid error).
-
-.. note::
-
- If you want to use your metrics to feed a custom logger, to visualize data or to track performance, you can access to results with ``env.get_metrics()`` **at the end of an episode**. In this case, it returns :
- 
- .. code-block:: python
- 
-  { "Market Return" :  "25.30%", "Portfolio Return" : "45.24%", "Position Changes" : 28417, "Episode Lenght" : 33087 }
-
- 
+* ``function`` ：接受 `History 对象 <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ 作为参数并返回一个值的函数（建议返回字符串以避免错误）。
 
 .. note::
 
-  If you want to use your metrics to feed a custom logger, to visualize data or to track performance, you can access to results with ``env.get_metrics()`` **at the end of an episode**. In this case, it returns :
+ 如果你想使用这些指标来驱动自定义日志器、可视化数据或跟踪性能，可以在**回合结束时**通过 ``env.get_metrics()`` 访问结果。此时返回：
+ 
+ .. code-block:: python
+ 
+  { "市场收益" :  "25.30%", "投资组合收益" : "45.24%", "仓位变动次数" : 28417, "回合长度" : 33087 }
+
+ 
+
+.. note::
+
+  如果你想使用这些指标来驱动自定义日志器、可视化数据或跟踪性能，可以在**回合结束时**通过 ``env.get_metrics()`` 访问结果。此时返回：
 
  .. code-block:: python
  
-  { "Market Return" :  "25.30%", "Portfolio Return" : "45.24%", "Position Changes" : 28417, "Episode Lenght" : 33087 }
+  { "市场收益" :  "25.30%", "投资组合收益" : "45.24%", "仓位变动次数" : 28417, "回合长度" : 33087 }
  

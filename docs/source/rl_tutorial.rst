@@ -1,60 +1,60 @@
-Tutorial
+教程
 ========
 
-Welcome to the first tutorial of the Gym Trading Env package. You will learn how to use it. 
+欢迎使用 Gym Trading Env 包的第一个教程。您将学习如何使用它。
 
 .. note:: 
 
-  During the entire tutorial, we will consider that we want to trade on the BTC/USD pair.
+  在整个教程中，我们将以 BTC/USD 交易对为例。
 
 
-Understand the action space
+理解动作空间
 ---------------------------
 
-Positions
+仓位
 ^^^^^^^^^
 
-I have seen many environments that consider actions such as BUY, SELL. In my experience, it is a mistake to consider a reinforcement learning agent in the same way as a trader. Because, behind a trade, what really matter is the : **position reached**. In the environment, we label each position by a number :
-*(example with pair BTC/USD)*
+我见过许多环境将动作视为买入(BUY)、卖出(SELL)。根据我的经验，以与交易者相同的方式考虑强化学习代理是一个错误。因为在交易背后，真正重要的是：**达到的仓位**。在环境中，我们用数字标记每个仓位：
+*(以BTC/USD交易对为例)*
 
-* ``1`` : All of our portfolio is converted into BTC. **(=BUY ALL)**
-* ``0`` : All of our portfolio is converted into USD. **(=SELL ALL)**
+* ``1``：将全部投资组合转换为BTC **(=全部买入)**
+* ``0``：将全部投资组合转换为USD **(=全部卖出)**
 
-*Now, we can imagine half position and other variants :*
+*现在，我们可以想象半仓和其他变体：*
 
-* ``0.5`` : 50% in BTC & 50% in USD
-* Even : ``0.1`` : 10% in BTC & 90% in USD ....
+* ``0.5``：50% BTC & 50% USD
+* 甚至 ``0.1``：10% BTC & 90% USD ....
 
 .. note::
 
-  It is way simpler for a RL-agent to work with positions. This way, it can easily make complex operation with a simple action space.
+  对于强化学习代理来说，使用仓位进行操作要简单得多。这样，它可以通过简单的动作空间轻松执行复杂的操作。
 
-Complex positions
+复杂仓位
 ^^^^^^^^^^^^^^^^^
 
-This environment supports more complex positions (actually any float from -inf to +inf) such as:
+此环境支持更复杂的仓位（实际上是任何从负无穷到正无穷的浮点数），例如：
 
-* ``-1`` : Bet 100% of the portfolio value on the decline of BTC (=SHORT). To perform this action, the environment borrows 100% of the portfolio valuation as BTC to an imaginary person, and immediately sells it to get USD. When the agent wants to close this position, the environment buys the owed amount of BTC and repays the imaginary person with it. If the price has fallen during the operation, we buy cheaper than we initially sold : the difference is our gain. During the loan, the imaginary person is paid a small rent (parameter : ``borrow_interest_rate`` of the environment).
-* ``+2`` : Bet 100% of the portfolio value on the rise of BTC. We use the same mechanism as explained above, but we borrow USD and buy BTC with it.
+* ``-1``：将投资组合价值的100%押注在BTC下跌上（=做空）。为了执行此操作，环境会向一个假想的人借入100%的投资组合估值作为BTC，并立即将其出售以获得USD。当代理想要平仓时，环境会买回所欠的BTC数量并偿还给假想的人。如果在此操作期间价格下跌，我们买入的价格会比最初卖出的价格便宜：差额就是我们的收益。在借贷期间，假想的人会获得少量租金（环境参数：``borrow_interest_rate``）。
+* ``+2``：将投资组合价值的100%押注在BTC上涨上。我们使用与上述相同的机制，但我们借入USD并用它购买BTC。
 
 .. note::
 
-  Can we use ``-10`` ?
-  We can BUT ... We need to borrow 1000% of the portfolio valuation as BTC. You need to understand that such a "leverage" is very risky. Indeed, if the BTC price rises by 10%, you need to repay the original 1000% of your portfolio valuation at 1100% (1000%*1.10) of your current portfolio valuation. Well, 100% (1100% - 1000%) of your portfolio is used to repay your debt. GAME OVER, you have 0$ left. The leverage is very useful but also risky, as it increases your gains AND your losses. Always keep in mind that you can lose everything.
+  我们可以使用 ``-10`` 吗？
+  可以，但是...我们需要借入投资组合估值的1000%作为BTC。您需要了解，这种“杠杆”非常危险。事实上，如果BTC价格上涨10%，您需要以当前投资组合估值的1100%（1000%*1.10）来偿还最初1000%的投资组合估值。那么，您投资组合的100%（1100% - 1000%）将用于偿还债务。游戏结束，您将一无所有。杠杆非常有用但也非常危险，因为它会增加您的收益和损失。请始终记住，您可能会失去一切。
 
 
-Market data
+市场数据
 -----------
 
-Import your own dataset
+导入您自己的数据集
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-They need to be ordered by ascending date. Index must be DatetimeIndex. Your DataFrame needs to contain a close price labelled ``close`` for the environment to run, and open, high, low, volume features respectively labelled ``open`` , ``high`` , ``low`` , ``volume`` to perform renders.
+它们需要按日期升序排列。索引必须是 DatetimeIndex。您的 DataFrame 需要包含一个名为 ``close`` 的收盘价，以便环境运行；以及分别名为 ``open``、``high``、``low``、``volume`` 的开盘价、最高价、最低价和成交量特征，以便进行渲染。
 
 .. code-block:: python
 
   import pandas as pd
-  # Available in the github repo : examples/data/BTC_USD-Hourly.csv
+  # 可在 GitHub 仓库中找到：examples/data/BTC_USD-Hourly.csv
   url = "https://raw.githubusercontent.com/ClementPerroud/Gym-Trading-Env/main/examples/data/BTC_USD-Hourly.csv"
   df = pd.read_csv(url, parse_dates=["date"], index_col= "date")
   df.sort_index(inplace= True)
@@ -62,11 +62,11 @@ They need to be ordered by ascending date. Index must be DatetimeIndex. Your Dat
   df.drop_duplicates(inplace=True)
 
   
-Easy download for crypto
+轻松下载加密货币数据
 ^^^^^^^^^^^^^^^^^^^^^^^^
-The packaging also include an easy way to download historical data of crypto pairs. It stores data as `.pkl` for easy and fast usage. 
+该软件包还提供了一种轻松下载加密货币交易对历史数据的方法。它将数据存储为 `.pkl` 格式，以便快速使用。
 
-`More information here  <https://gym-trading-env.readthedocs.io/en/latest/download.html>`_
+`更多信息请点击此处 <https://gym-trading-env.readthedocs.io/en/latest/download.html>`_
 
 .. code-block:: python
 
@@ -74,60 +74,60 @@ The packaging also include an easy way to download historical data of crypto pai
   import datetime
   import pandas as pd
   
-  # Download BTC/USDT historical data from Binance and stores it to directory ./data/binance-BTCUSDT-1h.pkl
+  # 下载币安 BTC/USDT 历史数据并将其存储到目录 ./data/binance-BTCUSDT-1h.pkl
   download(exchange_names = ["binance"],
       symbols= ["BTC/USDT"],
       timeframe= "1h",
       dir = "data",
       since= datetime.datetime(year= 2020, month= 1, day=1),
   )
-  # Import your fresh data
+  # 导入您的新数据
   df = pd.read_pickle("./data/binance-BTCUSDT-1h.pkl")
 
 
-Create your features
+创建您的特征
 --------------------
 
-Your RL-agent will need inputs. It is your job to make sure it has everything it needs. 
+您的强化学习代理将需要输入。确保它拥有所需的一切是您的职责。
 
 .. important::
 
-  The environment will recognize as inputs every column that contains the keyword '**feature**' in its name.
+  环境将识别名称中包含关键字“**feature**”的每一列作为输入。
 
 
 .. code-block:: python
 
-  # df is a DataFrame with columns : "open", "high", "low", "close", "Volume USD"
+  # df 是一个包含列的 DataFrame："open", "high", "low", "close", "Volume USD"
   
-  # Create the feature : ( close[t] - close[t-1] )/ close[t-1]
+  # 创建特征：( close[t] - close[t-1] )/ close[t-1]
   df["feature_close"] = df["close"].pct_change() 
   
-  # Create the feature : open[t] / close[t]
+  # 创建特征：open[t] / close[t]
   df["feature_open"] = df["open"]/df["close"]
   
-  # Create the feature : high[t] / close[t]
+  # 创建特征：high[t] / close[t]
   df["feature_high"] = df["high"]/df["close"]
   
-  # Create the feature : low[t] / close[t]
+  # 创建特征：low[t] / close[t]
   df["feature_low"] = df["low"]/df["close"]
   
-   # Create the feature : volume[t] / max(*volume[t-7*24:t+1])
+   # 创建特征：volume[t] / max(*volume[t-7*24:t+1])
   df["feature_volume"] = df["Volume USD"] / df["Volume USD"].rolling(7*24).max()
   
-  df.dropna(inplace= True) # Clean again !
-  # Eatch step, the environment will return 5 inputs  : "feature_close", "feature_open", "feature_high", "feature_low", "feature_volume"
+  df.dropna(inplace= True) # 再次清理！
+  # 每一步，环境将返回 5 个输入：“feature_close”, “feature_open”, “feature_high”, “feature_low”, “feature_volume”
 
 
 
 .. note::
 
-  What is presented above are features called **static features**. Indeed, there are computed once before being used in the environement. But you also use **dynamic features** that are computed at each step of the environment. By default, the environment add 2 dynamics features. More information in the **Feature** page.
+  上面介绍的是称为**静态特征**的特征。实际上，它们在环境中被使用之前只计算一次。但您也可以使用**动态特征**，它们在环境的每一步都会计算。默认情况下，环境会添加 2 个动态特征。更多信息请参见**特征**页面。
  
  
-Create your first environment
+创建您的第一个环境
 -----------------------------
 
-Well done, you did a good job configuring your first environment !
+做得好，您已经很好地配置了您的第一个环境！
 
 .. code-block:: python
 
@@ -135,35 +135,35 @@ Well done, you did a good job configuring your first environment !
   import gym_trading_env
   env = gym.make("TradingEnv",
           name= "BTCUSD",
-          df = df, # Your dataset with your custom features 
-          positions = [ -1, 0, 1], # -1 (=SHORT), 0(=OUT), +1 (=LONG)
-          trading_fees = 0.01/100, # 0.01% per stock buy / sell (Binance fees)
-          borrow_interest_rate= 0.0003/100, # 0.0003% per timestep (one timestep = 1h here)
+          df = df, # 您的数据集，包含您的自定义特征
+          positions = [ -1, 0, 1], # -1 (=做空), 0(=空仓), +1 (=做多)
+          trading_fees = 0.01/100, # 每笔股票买入/卖出收取 0.01% 的费用（币安费用）
+          borrow_interest_rate= 0.0003/100, # 每时间步 0.0003%（此处一个时间步 = 1 小时）
       )
 
-`TradingEnv documentation <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_
+`TradingEnv 文档 <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_
 
-Run the environment
+运行环境
 -------------------
 
-Now it's time to enjoy.
+现在是享受的时候了。
 
 .. code-block:: python
  
-  # Run an episode until it ends :
+  # 运行一个回合直到结束：
   done, truncated = False, False
   observation, info = env.reset()
   while not done and not truncated:
-      # Pick a position by its index in your position list (=[-1, 0, 1])....usually something like : position_index = your_policy(observation)
-      position_index = env.action_space.sample() # At every timestep, pick a random position index from your position list (=[-1, 0, 1])
+      # 从您的仓位列表中（=[-1, 0, 1]）选择一个仓位索引……通常类似于：position_index = your_policy(observation)
+      position_index = env.action_space.sample() # 在每个时间步，从您的仓位列表中（=[-1, 0, 1]）随机选择一个仓位索引
       observation, reward, done, truncated, info = env.step(position_index)
  
 .. code-block:: bash
 
-  Market Return : 423.10%   |   Portfolio Return : -98.28%
+  市场回报率：423.10%   |   投资组合回报率：-98.28%
 
-Every episode produces an output with basic metrics that you can customize. `More information on how to customize your environment here <https://gym-trading-env.readthedocs.io/en/latest/customization.html#>`_
+每个回合都会生成一个包含基本指标的输出，您可以自定义这些指标。`有关如何自定义环境的更多信息，请点击此处 <https://gym-trading-env.readthedocs.io/en/latest/customization.html#>`_
 
-Want a cool-looking render ? `More information on how to render a finished episode here <https://gym-trading-env.readthedocs.io/en/latest/render.html>`_
+想要一个酷炫的渲染效果吗？`有关如何渲染已完成回合的更多信息，请点击此处 <https://gym-trading-env.readthedocs.io/en/latest/render.html>`_
 
   

@@ -1,24 +1,24 @@
-Multi datasets environment
-==========================
+多数据集环境
+============
 
-Now, you know how to create an environment for your RL agent with one dataset. But something seems weird ... One good dataset is about 100k data points long. But it sounds very little compared to the millions steps that RL-Agent needs to get good.
+现在，你已经知道如何为你的强化学习代理创建一个单数据集环境。但有些地方似乎不对劲……一个好的数据集大约有 10 万个数据点。但这与强化学习代理需要数百万步才能表现良好相比，听起来非常少。
 
-**Is ONE SINGLE dataset enough for an agent to learn real stuff ?**
+**单个数据集足以让代理学到真东西吗？**
 
-In my opinion, one dataset is not enough. The agent will overfit and won't be able to generalize. My solution is simple, adding multiple datasets to the environment. I present you the *MultiDatasetTradingEnv*.
+在我看来，一个数据集是不够的。代理会过拟合，无法泛化。我的解决方案很简单，就是为环境添加多个数据集。我向你介绍 *MultiDatasetTradingEnv*。
 
-Multi Dataset Trading Environment
----------------------------------
+多数据集交易环境
+-----------------
 
-  (Inherits from TradingEnv)
+  （继承自 TradingEnv）
   
-A TradingEnv environment that handle multiple datasets. It automatically switches from one dataset to another at the end of an episode. Bringing diversity by having several datasets, even from the same pair from different exchanges, is a good idea. This should help avoiding overfitting.
+一个处理多个数据集的 TradingEnv 环境。它会在每个回合结束时自动从一个数据集切换到另一个数据集。通过拥有多个数据集（即使是来自不同交易所的相同交易对），带来多样性是一个好主意。这应该有助于避免过拟合。
 
-How to use ?
+如何使用？
 ^^^^^^^^^^^^
 
-You need to specify a `glob path <https://docs.python.org/3.6/library/glob.html>`_ that gather all of the datasets (in .pkl format).
-Imagine you have several preprocessed datasets in a folder named ``preprocessed_data`` .
+你需要指定一个 `glob 路径 <https://docs.python.org/3.6/library/glob.html>`_ 来收集所有数据集（.pkl 格式）。
+假设你有一个名为 ``preprocessed_data`` 的文件夹，其中包含多个预处理过的数据集。
 
 .. code-block:: python
   
@@ -30,24 +30,24 @@ Imagine you have several preprocessed datasets in a folder named ``preprocessed_
 
 .. note::
   
-    **If you do this, you need to make sure that all your datasets meets the requirements** : They need to be ordered by ascending date. Index must be DatetimeIndex. Your DataFrame needs to contain a ``close`` price labelled close for the environment to run. And open, high, low, volume columns respectively labelled ``open`` , ``high`` , ``low`` , ``volume`` to perform renders. The desired input obersations for your agent needs to contain ``feature`` in their column name).
+    **如果你这样做，你需要确保所有数据集都满足要求**：它们需要按日期升序排列。索引必须是 DatetimeIndex。你的 DataFrame 需要包含一个名为 ``close`` 的收盘价列才能运行环境。并且需要包含名为 ``open``、``high``、``low``、``volume`` 的开盘价、最高价、最低价、成交量列才能进行渲染。你的代理所需的输入观测值需要在列名中包含 ``feature``）。
 
 
-Easy preprocess
+轻松预处理
 ^^^^^^^^^^^^^^^
 
-Instead of preprocessing and saving all of your datasets every time you need to change a feature or whatever other change, I added a ``preprocess`` argument to the MultiDatasetTradingEnv. This function takes a pandas.DataFrame and returns a pandas.DataFrame. This function is applied to each dataset before it being used in the environment.
+为了避免每次需要更改特征或其他更改时都重新预处理和保存所有数据集，我为 MultiDatasetTradingEnv 添加了一个 ``preprocess`` 参数。此函数接受一个 pandas.DataFrame 并返回一个 pandas.DataFrame。此函数在每个数据集用于环境之前都会被应用。
 
-Imagine you have several raw datasets in a folder named ``raw_data`` .
+假设你有一个名为 ``raw_data`` 的文件夹，其中包含多个原始数据集。
 
 .. code-block:: python
 
   def preprocess(df : pd.DataFrame):
-    # Preprocess
+    # 预处理
     df["date"] = pd.to_datetime(df["timestamp"], unit= "ms")
     df.set_index("date", inplace = True)
     
-    # Create your features
+    # 创建你的特征
     df["feature_close"] = df["close"].pct_change()
     df["feature_open"] = df["open"]/df["close"]
     df["feature_high"] = df["high"]/df["close"]
@@ -62,23 +62,23 @@ Imagine you have several raw datasets in a folder named ``raw_data`` .
           preprocess= preprocess,
       )
  
-`MultiDatasetTradingEnv documentation <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_ 
+`MultiDatasetTradingEnv 文档 <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_ 
 
-Run the environment
-^^^^^^^^^^^^^^^^^^^
+运行环境
+^^^^^^^^^^^^^^^
 
 .. code-block:: python
   
-  # Run 100 episodes
+  # 运行 100 个回合
   for _ in range(100): 
-    # At every episode, the env will pick a new dataset.
+    # 在每个回合中，环境都会选择一个新的数据集。
     done, truncated = False, False
     observation, info = env.reset()
     while not done and not truncated:
-        position_index = env.action_space.sample() # Pick random position index
+        position_index = env.action_space.sample() # 选择随机仓位索引
         observation, reward, done, truncated, info = env.step(position_index)
 
 .. note::
   
-  The code to run the environment does not change from ``TradingEnv``
+  运行环境的代码与 ``TradingEnv`` 没有变化
 

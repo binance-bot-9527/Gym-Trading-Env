@@ -1,12 +1,12 @@
-Vectorize your env
+向量化您的环境
 ==================
 
-Gym vector
+Gym 向量化
 ----------
 
-**You still want your agent to perform better ?**
+**您仍然希望您的代理表现更好吗？**
 
-Then, I suggest to use Vectorized Environment to parallelize several environments. It garantees having multiple simultaneous sources of data during the training.
+那么，我建议使用向量化环境来并行化多个环境。它保证在训练期间拥有多个同步数据源。
 
 .. code-block:: python
 
@@ -34,12 +34,12 @@ Then, I suggest to use Vectorized Environment to parallelize several environment
   
 .. note::
 
-  Using ``if __name__ == "__main__":`` is recommended as you might encounter errors if you omit it.
+  建议使用 ``if __name__ == "__main__":``，否则可能会遇到错误。
 
-Special cases
+特殊情况
 -------------
 
-In some cases (Jupyter Notebooks), you might need to use the ``SyncVectorEnv`` object from gym to avoid crashes :
+在某些情况下（Jupyter Notebooks），您可能需要使用 gym 中的 ``SyncVectorEnv`` 对象来避免崩溃：
 
 .. code-block:: python
 
@@ -54,12 +54,12 @@ In some cases (Jupyter Notebooks), you might need to use the ``SyncVectorEnv`` o
     return env
   envs = gym.vector.SyncVectorEnv([lambda: make_env() for _ in range(3)])
 
-Run the environments
+运行环境
 --------------------
 
 .. code-block:: python
       
       observation, info = env.reset()
       while True:
-        actions = [0, 0, 0] # 3D List as we have 3 simultaneous environments
+        actions = [0, 0, 0] # 3D 列表，因为我们有 3 个同时存在的环境
         observation, reward, done, truncated, info = env.step(actions)

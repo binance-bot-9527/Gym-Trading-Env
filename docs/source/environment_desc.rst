@@ -1,47 +1,47 @@
-Environment Quick Summary
-=========================
+环境快速概述
+=============
 
 .. image:: images/render.gif
   :width: 600
   :align: center
   
   
-This environment is a `Gymnasium <https://gymnasium.farama.org/content/basic_usage/>`_ environment designed for trading on a single pair.
+该环境是一个 `Gymnasium <https://gymnasium.farama.org/content/basic_usage/>`_ 环境，设计用于单一交易对的交易。
 
 .. list-table::
    :widths: 25 70
    :header-rows: 0
    
-   * - Action Space
+   * - 动作空间
      - ``Discrete(number_of_positions)``
-   * - Observation Space
+   * - 观测空间
      - ``Box(-np.inf, +np.inf, shape=...)``
-   * - Import
+   * - 导入
      - ``gymnasium.make("TradingEnv", df=df)``
 
-Important Parameters
---------------------
+重要参数
+--------
 
-* ``df`` *(required)*: A pandas.DataFrame with a ``close`` and DatetimeIndex as index. To perform a render, your DataFrame also needs to contain ``open``, ``low``, and ``high``. 
-* ``positions`` *(optional, default: [-1, 0, 1])*: The list of positions that your agent can take. Each position is represented by a number (as described in the *Action Space* section).
+* ``df`` *(必需)*：一个 pandas.DataFrame，索引为 DatetimeIndex，且包含 ``close`` 列。若要执行渲染，DataFrame 还需包含 ``open``、``low`` 和 ``high`` 列。
+* ``positions`` *(可选，默认值：[-1, 0, 1])*：代理可采取的仓位列表。每个仓位由一个数字表示（详见*动作空间*部分）。
 
-`Documentation of all the parameters <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_
+`所有参数文档 <https://gym-trading-env.readthedocs.io/en/latest/documentation.html#gym_trading_env.environments.TradingEnv>`_
 
-Action Space
-------------
+动作空间
+--------
 
-The action space is a list of **positions** given by the user. Every position is labeled from -inf to +inf and corresponds to the ratio of the portfolio valuation engaged in the position ( > 0 to bet on the rise, < 0 to bet on the decrease).
+动作空间是用户提供的**仓位**列表。每个仓位从 -∞ 到 +∞ 标记，表示投资组合估值中投入该仓位的比例（> 0 表示看涨，< 0 表示看跌）。
 
 
-.. list-table:: Example with BTC/USDT pair (%pv means *"Percent of the Portfolio Valuation"*)
+.. list-table:: 以 BTC/USDT 交易对为例（%pv 表示*投资组合估值百分比*）
    :widths: 5 5 5 5 5
    :header-rows: 1
    
-   * - Position examples
+   * - 仓位示例
      - BTC (%pv)
      - USDT (%pv)
-     - Borrowed BTC (%pv)
-     - Borrowed USDT (%pv)
+     - 借入的 BTC (%pv)
+     - 借入的 USDT (%pv)
    * - **0**
      -  
      - 100
@@ -68,18 +68,17 @@ The action space is a list of **positions** given by the user. Every position is
      - 100
      -  
      
+如果 ``position < 0``：环境执行做空操作（通过借入 USDT 并用其买入 BTC）。
 
-If ``position < 0``: the environment performs a SHORT (by borrowing USDT and buying BTC with it).
+如果 ``position > 1``：环境执行保证金交易（通过借入 BTC 并卖出以获得 USDT）。
 
-If ``position > 1``: the environment uses MARGIN trading (by borrowing BTC and selling it to get USDT).
+观测空间
+--------
 
-Observation Space
-------------------
+观测空间是一个 np.array，包含：
 
-The observation space is an np.array containing:
-
-* The row of your DataFrame columns containing ``features`` in their name, at a given step : the **static features**
-* The **dynamic features** (by default, the last position taken by the agent, and the current real position).
+* DataFrame 中列名包含 ``feature`` 的行：**静态特征**
+* **动态特征**（默认包括代理上一步采取的仓位和当前真实仓位）。
 
 .. code-block:: python
 
@@ -92,7 +91,7 @@ The observation space is an np.array containing:
   >>> observation
   array([-2.2766300e-04,  1.0030895e+00,  9.9795288e-01,  1.0000000e+00], dtype=float32)
 
-If the ``windows`` parameter is set to an integer W > 1, the observation is a stack of the last W states.
+如果 ``windows`` 参数设置为整数 W > 1，则观测为最近 W 个状态的堆叠。
 
 .. code-block:: python
   
@@ -104,25 +103,25 @@ If the ``windows`` parameter is set to an integer W > 1, the observation is a st
          [-0.00408145,  1.0069852 ,  0.99777853,  1.        ]],
          dtype=float32)
 
-Reward
-----------
+奖励
+----
 
-The reward is given by the formula :math:`r_{t} = ln(\frac{p_{t}}{p_{t-1}})\text{ with }p_{t}\text{ = portofolio valuation at timestep }t` . It is highly recommended to `customize the reward function <https://gym-trading-env.readthedocs.io/en/latest/customization.html#custom-reward-function>`_ to your needs.
+奖励由公式 :math:`r_{t} = ln(\frac{p_{t}}{p_{t-1}})\text{，其中 }p_{t}\text{ 是时间步 }t\text{ 的投资组合估值}` 给出。强烈建议根据需要 `自定义奖励函数 <https://gym-trading-env.readthedocs.io/en/latest/customization.html#custom-reward-function>`_。
 
-Starting State
----------------
+起始状态
+--------
 
-The environment explores the given DataFrame and starts at its beginning.
+环境遍历给定的 DataFrame 并从其开始处启动。
 
-Episode Termination
---------------------
+回合终止
+--------
 
-The episode finishes if:
+回合在以下情况下结束：
 
-1 - The environment reaches the end of the DataFrame, ``truncated`` is returned as ``True``
-2 - The portfolio valuation reaches 0 (or bellow). ``done`` is returned as ``True``. It can happen when taking margin positions (>1 or <0).
+1 - 环境达到 DataFrame 末尾，返回 ``truncated`` 为 ``True``
+2 - 投资组合估值降至 0（或以下），返回 ``done`` 为 ``True``。这可能发生在采取保证金仓位（>1 或 <0）时。
 
-Arguments
-------------
+参数
+----
 
 .. autoclass:: gym_trading_env.environments.TradingEnv

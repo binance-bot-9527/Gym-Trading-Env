@@ -1,28 +1,28 @@
-Render
-======
+渲染
+====
 
 
 
 .. note::
 
-  The render runs with ``Flask`` on localhost as a web app, and the charts are drawn with the ``pyecharts`` librairy.
+  渲染器在本地主机上作为 Web 应用程序运行，使用 ``Flask``，图表则通过 ``pyecharts`` 库绘制。
 
 
 
 
-Your first render
------------------
+首次渲染
+---------
 
-For the render not to perturb the training, it needs to be performed in a separate python script. This way you can explore your episode results without disturbing your RL-agent training.
+为了不干扰训练，渲染需要在单独的 Python 脚本中执行。这样你就可以在不干扰强化学习代理训练的情况下，探索你的回合结果。
 
-In the *running environment script*, you need to save your render logs :
+在*运行环境脚本*中，你需要保存渲染日志：
 
 .. code-block:: python
 
-  # At the end of the episode you want to render
+  # 在你想要渲染的回合结束时
   env.save_for_render(dir = "render_logs")
 
-Then, in a *separate script* :
+然后，在*单独的脚本*中：
 
 .. code-block:: python
 
@@ -36,22 +36,22 @@ Then, in a *separate script* :
   * Running on http://127.0.0.1:5000
   ...
 
-Go to URL mentionned by Flask (here `http://127.0.0.1:5000 <http://127.0.0.1:5000>`_)
+访问 Flask 提到的 URL（这里是 `http://127.0.0.1:5000 <http://127.0.0.1:5000>`_）
  
 .. image:: images/render.gif
-  :alt: Alternative text
+  :alt: 替代文本
 
-Customize your render
----------------------
+自定义渲染
+-----------
 
-Add custom lines
+添加自定义线条
 ^^^^^^^^^^^^^^^^
 
 .. code-block:: python
   
   renderer = Renderer(render_logs_dir="render_logs")
   
-  # Add Custom Lines (Simple Moving Average)
+  # 添加自定义线条（简单移动平均线）
   renderer.add_line( name= "sma10", function= lambda df : df["close"].rolling(10).mean(), line_options ={"width" : 1, "color": "purple"})
   renderer.add_line( name= "sma20", function= lambda df : df["close"].rolling(20).mean(), line_options ={"width" : 1, "color": "blue"})
   
@@ -59,24 +59,24 @@ Add custom lines
 
 .. image:: images/custom_lines.PNG
   :width: 600
-  :alt: Alternative text
+  :alt: 替代文本
 
-Add custom lines with ``.add_line(name, function, line_options)`` that takes following parameters :
+使用 ``.add_line(name, function, line_options)`` 添加自定义线条，该函数接受以下参数：
 
-* ``name`` : The name of the line.
-* ``function`` : The function takes the `History object <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_ (converted into a DataFrame because performance does not really matter anymore during renders) of the episode as a parameter and needs to return a Series, 1-D array, or list of the length of the DataFrame.
-* ``line_options`` *(optional)* : A Dict object that can have keys ``color`` (str) and ``width`` (int) to control the appearance of the plot.
+* ``name``：线条的名称。
+* ``function``：该函数接受 `历史对象 <https://gym-trading-env.readthedocs.io/en/latest/history.html>`_（在渲染时性能不再重要，因此转换为 DataFrame）作为参数，需要返回一个 Series、一维数组或与 DataFrame 长度相同的列表。
+* ``line_options`` *(可选)*：一个 Dict 对象，可以包含 ``color`` (str) 和 ``width`` (int) 键来控制绘图的外观。
 
 
 
-Add custom metrics
-^^^^^^^^^^^^^^^^^^
+添加自定义指标
+^^^^^^^^^^^^^^^^
 
 .. code-block:: python
   
   renderer = Renderer(render_logs_dir="render_logs")
 
-  # Add Custom Metrics (Annualized metrics)
+  # 添加自定义指标（年化指标）
   renderer.add_metric(
       name = "Annual Market Return",
       function = lambda df : f"{ ((df['close'].iloc[-1] / df['close'].iloc[0])**(pd.Timedelta(days=365)/(df.index.values[-1] - df.index.values[0]))-1)*100:0.2f}%"
@@ -90,9 +90,9 @@ Add custom metrics
 
 .. image:: images/custom_metrics.PNG
   :width: 300
-  :alt: Alternative text
+  :alt: 替代文本
 
-Add custom metrics with ``.add_metric(name, function)`` that takes following parameters :
+使用 ``.add_metric(name, function)`` 添加自定义指标，该函数接受以下参数：
 
-* ``name`` : The name of the metrics.
-* ``function`` : The function takes the History object (converted into a DataFrame) of the episode as a parameter and needs to return a string.
+* ``name``：指标的名称。
+* ``function``：该函数接受历史对象（转换为 DataFrame）作为参数，需要返回一个字符串。

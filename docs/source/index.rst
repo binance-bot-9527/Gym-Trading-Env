@@ -39,52 +39,52 @@
       </a>
    </section>
   
-Gym Trading Env is a Gymnasium environment for simulating stocks and training Reinforcement Learning (RL) trading agents.
-It was designed to be fast and customizable for easy RL trading algorithms implementation.
+Gym Trading Env 是一个用于模拟股票交易和训练强化学习（RL）交易代理的 Gymnasium 环境。
+它的设计目标是快速且可定制，便于实现 RL 交易算法。
 
 +----------------------------------------------------------------+
 | `Github <https://github.com/ClementPerroud/Gym-Trading-Env>`_  |
 +----------------------------------------------------------------+
 
-Key features
-------------
+主要特性
+--------
 
-This package aims to greatly simplify the research phase by offering :
+本包旨在通过提供以下功能大大简化研究阶段：
 
-* Easy and quick download technical data on several exchanges
-* A simple and fast environment for the user and the AI, but which allows complex operations (Short, Margin trading).
-* A high performance rendering (can display several hundred thousand candles simultaneously), customizable to visualize the actions of its agent and its results.
-* (Coming soon) An easy way to backtest any RL-Agents or any kind
+* 在多个交易所轻松快速下载技术数据
+* 为用户和 AI 提供简单快速的环境，同时支持复杂操作（做空、保证金交易）
+* 高性能渲染（可同时显示数十万根蜡烛图），可定制以可视化代理的行为及其结果
+* （即将推出）一种简单的方式来回测任何 RL 代理或其他类型的代理
 
 .. image:: images/render.gif
 
-Installation
-------------
+安装
+----
 
-Gym Trading Env supports Python 3.9+ on Windows, Mac, and Linux. You can install it using pip:
+Gym Trading Env 支持 Windows、Mac 和 Linux 上的 Python 3.9+。你可以使用 pip 安装：
 
 .. code-block:: console
 
    pip install gym-trading-env
 
-Or using git :
+或者使用 git：
 
 .. code-block:: console
    
    git clone https://github.com/ClementPerroud/Gym-Trading-Env
 
    
-Contents
---------
+目录
+----
 
 .. toctree::
    
-   Introduction <self>
+   简介 <self>
    getting_started
    environment_desc
 
 .. toctree::
-   :caption: 🤖 Reinforcement Learning
+   :caption: 🤖 强化学习
    
    rl_tutorial
    customization
@@ -93,13 +93,13 @@ Contents
    vectorize_env
 
 .. toctree:: 
-   :caption: 🦾 Functionnalities
+   :caption: 🦾 功能
    
    render
    download
  
 .. toctree::
-   :caption: 📚 Reference
+   :caption: 📚 参考
    
    history
    documentation

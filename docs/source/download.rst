@@ -1,15 +1,15 @@
-Download market data
-====================
+下载市场数据
+==========
 
-Crypto market data
-------------------
+加密货币市场数据
+--------------
 
-Supported exchanges ...
-^^^^^^^^^^^^^^^^^^^^^^^
+支持的交易所 ...
+^^^^^^^^^^^^^^^^^
 
-The package provides an easy way to download crypto market data (works with CCTX and uses asyncio for FAST download).
+该包提供了一种简便的方法来下载加密货币市场数据（基于 CCTX 并使用 asyncio 实现快速下载）。
 
-For example, this code downloads market data of pairs ``BTC/USDT`` , ``ETH/USDT`` with a 1 hour timeframe, from all of the three exchanges Binance, Bitfinex and Huobi :
+例如，以下代码从 Binance、Bitfinex 和 Huobi 三个交易所下载 ``BTC/USDT`` 和 ``ETH/USDT`` 交易对的1小时时间框架的市场数据：
 
 .. code-block:: python
 
@@ -25,31 +25,31 @@ For example, this code downloads market data of pairs ``BTC/USDT`` , ``ETH/USDT`
       until = datetime.datetime(year= 2023, month= 1, day=1),
   )
 
-Output :
+输出：
 
 .. code-block:: bash
 
-  BTC/USDT downloaded from binance and stored at data/binance-BTCUSDT-1h.pkl
-  BTC/USDT downloaded from huobi and stored at data/huobi-BTCUSDT-1h.pkl
-  ETH/USDT downloaded from binance and stored at data/binance-ETHUSDT-1h.pkl
-  ETH/USDT downloaded from huobi and stored at data/huobi-ETHUSDT-1h.pkl
-  BTC/USDT downloaded from bitfinex2 and stored at data/bitfinex2-BTCUSDT-1h.pkl
-  ETH/USDT downloaded from bitfinex2 and stored at data/bitfinex2-ETHUSDT-1h.pkl
+  BTC/USDT 从 binance 下载并存储于 data/binance-BTCUSDT-1h.pkl
+  BTC/USDT 从 huobi 下载并存储于 data/huobi-BTCUSDT-1h.pkl
+  ETH/USDT 从 binance 下载并存储于 data/binance-ETHUSDT-1h.pkl
+  ETH/USDT 从 huobi 下载并存储于 data/huobi-ETHUSDT-1h.pkl
+  BTC/USDT 从 bitfinex2 下载并存储于 data/bitfinex2-BTCUSDT-1h.pkl
+  ETH/USDT 从 bitfinex2 下载并存储于 data/bitfinex2-ETHUSDT-1h.pkl
 
-This function uses pickle format to save the OHLCV data. You will need to import the dataset with ``pd.read_pickle('... .pkl')`` . The function supports exchange_names ``binance`` , ``bitfinex2`` (API v2) and ``huobi`` .
+该函数使用 pickle 格式保存 OHLCV 数据。你需要使用 ``pd.read_pickle('... .pkl')`` 导入数据集。该函数支持交易所名称 ``binance``、``bitfinex2``（API v2）和 ``huobi``。
 
-More exchanges ...
-^^^^^^^^^^^^^^^^^^
+更多交易所 ...
+^^^^^^^^^^^^^^^
 
 
-It is possible to add other exchanges available in **ccxt**.
+可以添加 ccxt 中支持的其他交易所。
 
-To do that, you need to update the ``EXCHANGE_LIMIT_RATES`` variable :
+为此，你需要更新 ``EXCHANGE_LIMIT_RATES`` 变量：
 
-* get ``id`` of the exchange from the ccxt's list of exchanges (`available here <https://github.com/ccxt/ccxt/tree/master/python#certified-cryptocurrency-exchanges>`_).
-* check the API limit rate and query policies of the exchange to complete ``limit`` , ``pause_every`` and ``pause`` parameters. Please, be kind to the APIs to avoid getting banned.
+* 从 ccxt 的交易所列表中获取交易所的 ``id``（`可在此处查看 <https://github.com/ccxt/ccxt/tree/master/python#certified-cryptocurrency-exchanges>`_）。
+* 检查该交易所的 API 限速和查询策略，填写 ``limit``、``pause_every`` 和 ``pause`` 参数。请善待 API，避免被封禁。
 
-Example with **Bybit** (ccxt id : ``bybit`` ):
+以 **Bybit**（ccxt id：``bybit``）为例：
 
 .. code-block:: python
   
@@ -57,9 +57,9 @@ Example with **Bybit** (ccxt id : ``bybit`` ):
   import datetime
 
   EXCHANGE_LIMIT_RATES["bybit"] = {
-      "limit" : 200, # One request will query 200 data points (aka candlesticks).
-      "pause_every" : 120, # it will pause every 120 requests.
-      "pause" : 2, # the pause will last 2 seconds.
+      "limit" : 200, # 每次请求查询200个数据点（即K线）。
+      "pause_every" : 120, # 每120次请求暂停一次。
+      "pause" : 2, # 暂停持续2秒。
   }
   download(
       exchange_names = ["binance", "bitfinex2", "huobi", "bybit"],
@@ -70,7 +70,7 @@ Example with **Bybit** (ccxt id : ``bybit`` ):
   )
 
 
-Stock market data
------------------
+股票市场数据
+-----------
 
-Coming soon ...
+敬请期待 ...

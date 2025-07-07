@@ -1,26 +1,26 @@
-Gettings Started
-================
+入门指南
+=======
 
-Installation
-------------
+安装
+----
 
-Gym Trading Env supports Python 3.9+ on Windows, Mac, and Linux. You can install it using pip:
+Gym Trading Env 支持 Windows、Mac 和 Linux 上的 Python 3.9+。你可以使用 pip 安装：
 
 .. code-block:: console
 
    pip install gym-trading-env
 
-Or using git :
+或者使用 git 克隆：
 
 .. code-block:: console
    
    git clone https://github.com/ClementPerroud/Gym-Trading-Env
 
 
-Import
-------
+导入
+----
 
-You can import Gym Trading Env with :
+你可以这样导入 Gym Trading Env：
 
 .. code-block:: python
 
