@@ -8,6 +8,9 @@ import numpy as np
 import pandas as pd
 
 def charts(df, lines = []):
+    # 定义图表函数，接受DataFrame和可选的线条列表作为输入。
+    # `df` 是包含市场数据的DataFrame。
+    # `lines` 是一个列表，包含要在图表上绘制的额外线条的配置。
     line_key = "ievi4G3vG678Vszad"
     for line in lines:
         df[line_key + line["name"]] = line["function"](df)
@@ -80,7 +83,7 @@ def charts(df, lines = []):
                     range_end=100,
                 ),],
             legend_opts=opts.LegendOpts(is_show=False),
-            #tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="line"),
+            # tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="line"), # 提示框配置，当鼠标悬停在图表上时显示数据信息。
             axispointer_opts= opts.AxisPointerOpts(
                     is_show=True,
                     link=[{"xAxisIndex": [0, 1, 2, 3, 4]}],
@@ -111,6 +114,7 @@ def charts(df, lines = []):
 
         candlesticks = candlesticks.overlap(line_plot)
     
+    # 交易量图表配置
     volumes = (
         Bar()
         .add_xaxis(xaxis_data=x_data)
@@ -156,6 +160,7 @@ def charts(df, lines = []):
     ,)[0]
 
 
+    # 投资组合价值图表配置
     portfolios = (
         Line()
         .add_xaxis(xaxis_data = x_data)

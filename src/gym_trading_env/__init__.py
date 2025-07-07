@@ -1,5 +1,7 @@
 from gymnasium.envs.registration import register
 
+# 注册 'TradingEnv' 环境
+# 注册 'MultiDatasetTradingEnv' 环境
 register(
     id='TradingEnv',
     entry_point='gym_trading_env.environments:TradingEnv',

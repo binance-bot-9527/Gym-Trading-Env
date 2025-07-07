@@ -19,14 +19,14 @@ download(
     since= datetime.datetime(year= 2019, month= 1, day=1),
 )
 
-# Import your datas
+# 导入你的数据
 df = pd.read_pickle("examples/data/binance-BTCUSDT-30m.pkl")
 df.sort_index(inplace= True)
 df.dropna(inplace= True)
 df.drop_duplicates(inplace=True)
 
-# Generating features
-# WARNING : the column names need to contain keyword 'feature' !
+# 生成特征
+# 警告：列名需要包含关键字 'feature'！
 df["feature_close"] = df["close"].pct_change()
 df["feature_open"] = df["open"]/df["close"]
 df["feature_high"] = df["high"]/df["close"]
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         reward_function = reward_function,
         portfolio_initial_value = 1000,
     )
-    # Run the simulation
+    # 运行模拟
     observation, info = env.reset()
     while True:
         actions = [1, 2, 3]

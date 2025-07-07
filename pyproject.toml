@@ -9,7 +9,7 @@ license = {file = "LICENSE.txt"}
 authors = [
   { name="Clement Perroud", email="clement.perroud.pro@gmail.com" },
 ]
-description = "A simple, easy, customizable Open IA Gym environments for trading."
+description = "一个简单、易用、可定制的Open IA Gym交易环境。"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

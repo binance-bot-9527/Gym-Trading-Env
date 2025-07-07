@@ -15,15 +15,23 @@ import warnings
 warnings.filterwarnings("error")
 
 def basic_reward_function(history : History):
+    # 基本奖励函数：计算投资组合估值的对数收益。
     return np.log(history["portfolio_valuation", -1] / history["portfolio_valuation", -2])
 
 def dynamic_feature_last_position_taken(history):
+    # 动态特征函数：返回上一个时间步的头寸。
     return history['position', -1]
 
 def dynamic_feature_real_position(history):
+    # 动态特征函数：返回当前实际头寸。
     return history['real_position', -1]
 
 class TradingEnv(gym.Env):
+    # 交易环境类，用于OpenAI Gym。
+    # 建议使用以下方式初始化：
+    # import gymnasium as gym
+    # import gym_trading_env
+    # env = gym.make('TradingEnv', ...)
     """
     An easy trading environment for OpenAI gym. It is recommended to use it this way :
 
@@ -34,49 +42,50 @@ class TradingEnv(gym.Env):
         env = gym.make('TradingEnv', ...)
 
 
-    :param df: The market DataFrame. It must contain 'open', 'high', 'low', 'close'. Index must be DatetimeIndex. Your desired inputs need to contain 'feature' in their column name : this way, they will be returned as observation at each step.
+    :param df: 市场DataFrame。必须包含'open'、'high'、'low'、'close'列。索引必须是DatetimeIndex。您希望作为输入的列名中需要包含'feature'：这样，它们将在每个步骤中作为观察值返回。
     :type df: pandas.DataFrame
 
-    :param positions: List of the positions allowed by the environment.
+    :param positions: 环境允许的头寸列表。
     :type positions: optional - list[int or float]
 
-    :param dynamic_feature_functions: The list of the dynamic features functions. By default, two dynamic features are added :
+    :param dynamic_feature_functions: 动态特征函数列表。默认情况下，添加两个动态特征：
     
-        * the last position taken by the agent.
-        * the real position of the portfolio (that varies according to the price fluctuations)
+        * 代理采取的最后一个头寸。
+        * 投资组合的实际头寸（根据价格波动而变化）。
 
     :type dynamic_feature_functions: optional - list   
 
-    :param reward_function: Take the History object of the environment and must return a float.
+    :param reward_function: 接受环境的History对象并必须返回一个浮点数。
     :type reward_function: optional - function<History->float>
 
-    :param windows: Default is None. If it is set to an int: N, every step observation will return the past N observations. It is recommended for Recurrent Neural Network based Agents.
+    :param windows: 默认为None。如果设置为整数N，则每个步骤的观察将返回过去N个观察。推荐用于基于循环神经网络的代理。
     :type windows: optional - None or int
 
-    :param trading_fees: Transaction trading fees (buy and sell operations). eg: 0.01 corresponds to 1% fees
+    :param trading_fees: 交易手续费（买入和卖出操作）。例如：0.01对应1%的手续费。
     :type trading_fees: optional - float
 
-    :param borrow_interest_rate: Borrow interest rate per step (only when position < 0 or position > 1). eg: 0.01 corresponds to 1% borrow interest rate per STEP ; if your know that your borrow interest rate is 0.05% per day and that your timestep is 1 hour, you need to divide it by 24 -> 0.05/100/24.
+    :param borrow_interest_rate: 每步借款利率（仅当头寸<0或头寸>1时）。例如：0.01对应每步1%的借款利率；如果您知道您的借款利率是每天0.05%，并且您的时间步长是1小时，您需要将其除以24 -> 0.05/100/24。
     :type borrow_interest_rate: optional - float
 
-    :param portfolio_initial_value: Initial valuation of the portfolio.
+    :param portfolio_initial_value: 投资组合的初始估值。
     :type portfolio_initial_value: float or int
 
-    :param initial_position: You can specify the initial position of the environment or set it to 'random'. It must contained in the list parameter 'positions'.
+    :param initial_position: 您可以指定环境的初始头寸或将其设置为'random'。它必须包含在'positions'列表参数中。
     :type initial_position: optional - float or int
 
-    :param max_episode_duration: If a integer value is used, each episode will be truncated after reaching the desired max duration in steps (by returning `truncated` as `True`). When using a max duration, each episode will start at a random starting point.
+    :param max_episode_duration: 如果使用整数值，每个episode将在达到所需的最大步长持续时间后被截断（通过返回`truncated`为`True`）。当使用最大持续时间时，每个episode将从一个随机起始点开始。
     :type max_episode_duration: optional - int or 'max'
 
-    :param verbose: If 0, no log is outputted. If 1, the env send episode result logs.
+    :param verbose: 如果为0，不输出日志。如果为1，环境发送episode结果日志。
     :type verbose: optional - int
     
-    :param name: The name of the environment (eg. 'BTC/USDT')
+    :param name: 环境的名称（例如：'BTC/USDT'）。
     :type name: optional - str
     
     """
     metadata = {'render_modes': ['logs']}
     def __init__(self,
+                # 初始化交易环境。
                 df : pd.DataFrame,
                 positions : list = [0, 1],
                 dynamic_feature_functions = [dynamic_feature_last_position_taken, dynamic_feature_real_position],
@@ -103,29 +112,33 @@ class TradingEnv(gym.Env):
         self.borrow_interest_rate = borrow_interest_rate
         self.portfolio_initial_value = float(portfolio_initial_value)
         self.initial_position = initial_position
-        assert self.initial_position in self.positions or self.initial_position == 'random', "The 'initial_position' parameter must be 'random' or a position mentionned in the 'position' (default is [0, 1]) parameter."
+        assert self.initial_position in self.positions or self.initial_position == 'random', "'initial_position'参数必须是'random'或'position'参数中提到的头寸（默认为[0, 1]）。"
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.max_episode_duration = max_episode_duration
         self.render_mode = render_mode
-        self._set_df(df)
+        self._set_df(df) # 设置DataFrame并提取特征列。
         
-        self.action_space = spaces.Discrete(len(positions))
+        self.action_space = spaces.Discrete(len(positions)) # 定义动作空间为离散空间，大小为头寸列表的长度。
         self.observation_space = spaces.Box(
+            # 定义观察空间为Box空间，范围从-np.inf到np.inf。
             -np.inf,
             np.inf,
             shape = [self._nb_features]
         )
         if self.windows is not None:
+            # 如果设置了窗口大小，则调整观察空间以适应窗口。
             self.observation_space = spaces.Box(
                 -np.inf,
                 np.inf,
                 shape = [self.windows, self._nb_features]
             )
         
-        self.log_metrics = []
+        self.log_metrics = [] # 用于记录指标的列表。
 
 
     def _set_df(self, df):
+        # 设置环境的DataFrame。
+        # df: 市场数据DataFrame。
         df = df.copy()
         self._features_columns = [col for col in df.columns if "feature" in col]
         self._info_columns = list(set(list(df.columns) + ["close"]) - set(self._features_columns))
@@ -145,11 +158,17 @@ class TradingEnv(gym.Env):
 
     
     def _get_ticker(self, delta = 0):
+        # 获取当前时间步的行情数据。
+        # delta: 相对于当前索引的偏移量。
         return self.df.iloc[self._idx + delta]
     def _get_price(self, delta = 0):
+        # 获取当前时间步的价格。
+        # delta: 相对于当前索引的偏移量。
         return self._price_array[self._idx + delta]
     
     def _get_obs(self):
+        # 获取当前观察值。
+        # 根据动态特征函数更新观察数组。
         for i, dynamic_feature_function in enumerate(self.dynamic_feature_functions):
             self._obs_array[self._idx, self._nb_static_features + i] = dynamic_feature_function(self.historical_info)
 
@@ -161,28 +180,34 @@ class TradingEnv(gym.Env):
 
     
     def reset(self, seed = None, options=None, **kwargs):
+        # 重置环境到初始状态。
+        # seed: 随机种子。
+        # options: 其他选项。
+        # kwargs: 其他关键字参数。
         super().reset(seed = seed, options = options, **kwargs)
         
-        self._step = 0
-        self._position = np.random.choice(self.positions) if self.initial_position == 'random' else self.initial_position
-        self._limit_orders = {}
+        self._step = 0 # 初始化步数为0。
+        self._position = np.random.choice(self.positions) if self.initial_position == 'random' else self.initial_position # 设置初始头寸。
+        self._limit_orders = {} # 初始化限价订单。
         
 
-        self._idx = 0
-        if self.windows is not None: self._idx = self.windows - 1
+        self._idx = 0 # 初始化当前索引为0。
+        if self.windows is not None: self._idx = self.windows - 1 # 如果设置了窗口，调整初始索引。
         if self.max_episode_duration != 'max':
+            # 如果设置了最大episode持续时间，则随机选择起始索引。
             self._idx = np.random.randint(
                 low = self._idx, 
                 high = len(self.df) - self.max_episode_duration - self._idx
             )
         
         self._portfolio  = TargetPortfolio(
+            # 初始化投资组合。
             position = self._position,
             value = self.portfolio_initial_value,
             price = self._get_price()
         )
         
-        self.historical_info = History(max_size= len(self.df))
+        self.historical_info = History(max_size= len(self.df)) # 初始化历史信息记录器。
         self.historical_info.set(
             idx = self._idx,
             step = self._step,
@@ -193,10 +218,10 @@ class TradingEnv(gym.Env):
             data =  dict(zip(self._info_columns, self._info_array[self._idx])),
             portfolio_valuation = self.portfolio_initial_value,
             portfolio_distribution = self._portfolio.get_portfolio_distribution(),
-            reward = 0,
+            reward = 0, # 初始奖励为0。
         )
 
-        return self._get_obs(), self.historical_info[0]
+        return self._get_obs(), self.historical_info[0] # 返回初始观察值和历史信息。
 
     def render(self):
         pass

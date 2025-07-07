@@ -6,9 +6,9 @@ from gym_trading_env.downloader import download, EXCHANGE_LIMIT_RATES
 import datetime
 
 EXCHANGE_LIMIT_RATES["bybit"] = {
-    "limit":200, # One request will query 1000 data points (aka candlesticks)
-    "pause_every": 120, # it will pause every 10 request
-    "pause" : 2, # the pause will last 1 second
+    "limit":200, # 单次请求将查询1000个数据点（即K线图）
+    "pause_every": 120, # 每10次请求暂停
+    "pause" : 2, # 暂停持续1秒
 }
 download(
     exchange_names = ["bybit"],

@@ -25,7 +25,7 @@ def reward_function(history):
 
 if __name__ == "__main__":
 
-    # Uncomment if needed
+    # 如果需要，请取消注释
     # download(
     #     exchange_names = ["binance", "bitfinex2", "huobi"],
     #     symbols= ["BTC/USDT", "ETH/USDT"],
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         reward_function = reward_function,
         portfolio_initial_value = 1000,
     )
-    # Run the simulation
+    # 运行模拟
     observation, info = env.reset()
     while True:
         actions = [1, 2, 3]

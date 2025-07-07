@@ -10,6 +10,10 @@ if sys.platform == 'win32':
 	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     
 EXCHANGE_LIMIT_RATES = {
+    # 交易所请求限制速率配置
+    # limit: 每批次请求的数据量
+    # pause_every: 每隔多少批次暂停一次
+    # pause: 暂停时长（秒）
     "bitfinex2": {
         "limit":10_000,
         "pause_every": 1,
@@ -28,6 +32,13 @@ EXCHANGE_LIMIT_RATES = {
 }
 
 async def _ohlcv(exchange, symbol, timeframe, limit, step_since, timedelta):
+    # 异步获取OHLCV（开盘价、最高价、最低价、收盘价、交易量）数据。
+    # exchange: 交易所对象。
+    # symbol: 交易对符号（例如："BTC/USDT"）。
+    # timeframe: 时间周期（例如："5m"）。
+    # limit: 每次请求的数据量限制。
+    # step_since: 开始时间戳。
+    # timedelta: 时间周期对应的毫秒数。
     result = await exchange.fetch_ohlcv(symbol = symbol, timeframe= timeframe, limit= limit, since=step_since)
     result_df = pd.DataFrame(result, columns=["timestamp_open", "open", "high", "low", "close", "volume"])
     for col in ["open", "high", "low", "close", "volume"]:
@@ -38,6 +49,15 @@ async def _ohlcv(exchange, symbol, timeframe, limit, step_since, timedelta):
     return result_df
 
 async def _download_symbol(exchange, symbol, timeframe = '5m', since = int(datetime.datetime(year=2020, month= 1, day= 1).timestamp()*1E3), until = int(datetime.datetime.now().timestamp()*1E3), limit = 1000, pause_every = 10, pause = 1):
+    # 异步下载单个交易对的历史数据。
+    # exchange: 交易所对象。
+    # symbol: 交易对符号。
+    # timeframe: 时间周期。
+    # since: 开始时间戳（毫秒）。
+    # until: 结束时间戳（毫秒）。
+    # limit: 每次请求的数据量限制。
+    # pause_every: 每隔多少批次暂停一次。
+    # pause: 暂停时长（秒）。
     timedelta = int(pd.Timedelta(timeframe).to_timedelta64()/1E6)
     tasks = []
     results = []
@@ -61,6 +81,12 @@ async def _download_symbol(exchange, symbol, timeframe = '5m', since = int(datet
     return final_df
 
 async def _download_symbols(exchange_name, symbols, dir, timeframe,  **kwargs):
+    # 异步下载多个交易对的历史数据。
+    # exchange_name: 交易所名称。
+    # symbols: 交易对列表。
+    # dir: 保存数据的目录。
+    # timeframe: 时间周期。
+    # kwargs: 其他参数，如limit, pause_every, pause, since, until。
     exchange = getattr(ccxt, exchange_name)({ 'enableRateLimit': True })
     for symbol in symbols:
         df = await _download_symbol(exchange = exchange, symbol = symbol, timeframe= timeframe, **kwargs)
@@ -70,6 +96,13 @@ async def _download_symbols(exchange_name, symbols, dir, timeframe,  **kwargs):
     await exchange.close()
 
 async def _download(exchange_names, symbols, timeframe, dir, since : datetime.datetime, until : datetime.datetime = datetime.datetime.now()):
+    # 异步下载指定交易所和交易对的历史数据。
+    # exchange_names: 交易所名称列表。
+    # symbols: 交易对列表。
+    # timeframe: 时间周期。
+    # dir: 保存数据的目录。
+    # since: 开始日期时间。
+    # until: 结束日期时间。
     tasks = []
     for exchange_name in exchange_names:
         
@@ -85,12 +118,15 @@ async def _download(exchange_names, symbols, timeframe, dir, since : datetime.da
         )
     await asyncio.gather(*tasks)
 def download(*args, **kwargs):
+    # 同步下载接口，内部调用异步下载函数。
+    # args, kwargs: 传递给_download函数的参数。
     # loop = asyncio.get_event_loop()
     asyncio.run(
         _download(*args, **kwargs)
     )
 
 async def main():
+    # 主函数，用于示例下载数据。
     await _download(
         ["binance", "bitfinex2", "huobi"],
         symbols= ["BTC/USDT", "ETH/USDT"],
@@ -102,4 +138,5 @@ async def main():
 
 
 if __name__ == "__main__":
+    # 当脚本直接运行时执行主函数。
     asyncio.run(main())

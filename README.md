@@ -24,40 +24,40 @@
    </a>
 </section>
   
-Gym Trading Env is an Gymnasium environment for simulating stocks and training Reinforcement Learning (RL) trading agents.
-It was designed to be fast and customizable for easy RL trading algorithms implementation.
+Gym Trading Env 是一个用于模拟股票和训练强化学习 (RL) 交易代理的 Gymnasium 环境。
+它旨在快速且可定制，以便轻松实现 RL 交易算法。
 
 
 | [Documentation](https://gym-trading-env.readthedocs.io/en/latest/index.html) |
 
 
-Key features
+主要特点
 ---------------
 
-This package aims to greatly simplify the research phase by offering :
+该软件包旨在通过提供以下功能，极大地简化研究阶段：
 
-* Easy and quick download technical data on several exchanges
-* A simple and fast environment for the user and the AI, but which allows complex operations (Short, Margin trading).
-* A high performance rendering (can display several hundred thousand candles simultaneously), customizable to visualize the actions of its agent and its results.
-* (Coming soon) An easy way to backtest any RL-Agents or any kind 
+* 轻松快速地下载多个交易所的技术数据
+* 为用户和AI提供一个简单快速的环境，同时支持复杂操作（做空、保证金交易）。
+* 高性能渲染（可同时显示数十万根K线），可自定义以可视化代理的操作及其结果。
+* （即将推出）一种轻松回测任何RL代理或任何类型的方法 
 
 ![Render animated image](https://raw.githubusercontent.com/ClementPerroud/Gym-Trading-Env/main/docs/source/images/render.gif)
 
-Installation
+安装
 ---------------
 
-Gym Trading Env supports Python 3.9+ on Windows, Mac, and Linux. You can install it using pip:
+Gym Trading Env 支持在 Windows、Mac 和 Linux 上使用 Python 3.9+。您可以使用 pip 安装它：
 
 ```bash
 pip install gym-trading-env
 ```
 
-Or using git :
+或者使用 git：
 
 ```bash
 git clone https://github.com/ClementPerroud/Gym-Trading-Env
 ```
 
 
-[Documentation available here](https://gym-trading-env.readthedocs.io/en/latest/index.html)
+[文档可在此处获取](https://gym-trading-env.readthedocs.io/en/latest/index.html)
 -----------------------------------------------------------------------------------------------

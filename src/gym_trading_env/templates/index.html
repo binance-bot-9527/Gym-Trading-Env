@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dropdown</title>
+    <title>下拉菜单</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,12 +61,12 @@ select{
     
     <div>
         <div id="info">
-            <h2> Metrics </h2>
+            <h2> 指标 </h2>
             <div id = "metrics">
 
             </div>
-            <h2 style="margin-top: 40px;"> Parameters </h2>
-            <p>Select render</p>
+            <h2 style="margin-top: 40px;"> 参数 </h2>
+            <p>选择渲染</p>
             <select name='select_dataset' id = 'select_dataset' method="GET" action="/">
                 {% for name in render_names|sort %}
                     <option value= "{{name}}" SELECTED>{{ name }}</option>
