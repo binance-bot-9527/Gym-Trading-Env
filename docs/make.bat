@@ -15,13 +15,10 @@ if "%1" == "" goto help
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
-	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
-	echo.installed, then set the SPHINXBUILD environment variable to point
-	echo.to the full path of the 'sphinx-build' executable. Alternatively you
-	echo.may add the Sphinx directory to PATH.
+	echo.未找到"sphinx-build"命令。请确保您已安装 Sphinx，然后将 SPHINXBUILD 环境变量设置为
+	echo."sphinx-build"可执行文件的完整路径。或者，您可以将 Sphinx 目录添加到 PATH。
 	echo.
-	echo.If you don't have Sphinx installed, grab it from
-	echo.http://sphinx-doc.org/
+	echo.如果您尚未安装 Sphinx，请从http://sphinx-doc.org/ 获取
 	exit /b 1
 )
 
